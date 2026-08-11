@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   TrendingUp,
   TrendingDown,
@@ -13,11 +14,13 @@ import { TransactionCard } from '../../components/financial/TransactionCard';
 import { LoadingState } from '../../components/ui/LoadingState';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { TransactionFormModal } from '../../components/financial/TransactionFormModal';
 import { useTransactions } from '../../hooks/useTransactions';
 import { formatCurrency } from '../../lib/utils';
 
 export function AdminDashboard() {
   const { transactions, summary, loading, error, refetch } = useTransactions();
+  const [formOpen, setFormOpen] = useState(false);
 
   if (loading) {
     return <LoadingState message="Loading dashboard…" />;
@@ -35,7 +38,11 @@ export function AdminDashboard() {
         title="Dashboard"
         description="Overview of event finances"
         actions={
-          <Button size="sm" icon={<Plus size={14} />}>
+          <Button
+            size="sm"
+            icon={<Plus size={14} />}
+            onClick={() => setFormOpen(true)}
+          >
             Add transaction
           </Button>
         }
@@ -109,17 +116,46 @@ export function AdminDashboard() {
           <Card>
             <EmptyState
               title="No transactions yet"
-              description="Add your first transaction to get started."
+              description="Add your first transaction or seed demo records to get started."
+              action={
+                <div className="flex items-center gap-2">
+                  <Button size="sm" onClick={() => setFormOpen(true)}>
+                    Add transaction
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={async () => {
+                      const { seedSampleData } = await import('../../data/seed');
+                      await seedSampleData();
+                      refetch();
+                    }}
+                  >
+                    Seed demo data
+                  </Button>
+                </div>
+              }
             />
           </Card>
         ) : (
           <Card padding="none">
             {recentTransactions.map(t => (
-              <TransactionCard key={t.id} transaction={t} />
+              <TransactionCard
+                key={t.id}
+                transaction={t}
+                linkTo={`/admin/transactions/${t.id}`}
+              />
             ))}
           </Card>
         )}
       </section>
+
+      {/* Transaction Form Modal */}
+      <TransactionFormModal
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        onSuccess={refetch}
+      />
     </div>
   );
 }

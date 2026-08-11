@@ -77,21 +77,28 @@ export async function getTransaction(id: string): Promise<Transaction | null> {
  * Compute financial summary from active transactions only.
  * Calculated on the client from the fetched data, not from user input.
  */
+/**
+ * Compute financial summary from active transactions only.
+ * Calculated on the client from the fetched data using integer paise
+ * arithmetic to prevent floating-point inaccuracies.
+ */
 export function computeSummary(transactions: Transaction[]): FinancialSummary {
   const active = transactions.filter(t => t.status === 'active');
 
-  const total_income = active
+  const totalIncomePaise = active
     .filter(t => t.type === 'income')
-    .reduce((sum, t) => sum + t.amount, 0);
+    .reduce((sum, t) => sum + Math.round(t.amount * 100), 0);
 
-  const total_expenses = active
+  const totalExpensesPaise = active
     .filter(t => t.type === 'expense')
-    .reduce((sum, t) => sum + t.amount, 0);
+    .reduce((sum, t) => sum + Math.round(t.amount * 100), 0);
+
+  const balancePaise = totalIncomePaise - totalExpensesPaise;
 
   return {
-    total_income,
-    total_expenses,
-    balance: total_income - total_expenses,
+    total_income: totalIncomePaise / 100,
+    total_expenses: totalExpensesPaise / 100,
+    balance: balancePaise / 100,
     transaction_count: active.length,
   };
 }

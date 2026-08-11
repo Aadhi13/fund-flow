@@ -2,13 +2,27 @@
  * Format a number as Indian Rupee currency.
  * Uses the en-IN locale for proper lakh/crore grouping.
  */
+/**
+ * Format a number as Indian Rupee currency.
+ * Uses the en-IN locale for proper lakh/crore grouping with 2 decimal places.
+ */
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(amount);
+}
+
+/**
+ * Generate a short, human-readable transaction identifier.
+ * Example: TXN-8A2F4B
+ */
+export function formatTxnId(id: string): string {
+  if (!id) return 'TXN-000000';
+  const clean = id.replace(/-/g, '');
+  return `TXN-${clean.slice(0, 6).toUpperCase()}`;
 }
 
 /**
@@ -24,6 +38,7 @@ export function formatSignedCurrency(amount: number, type: 'income' | 'expense')
  * Format an ISO date string to a human-readable format.
  */
 export function formatDate(isoString: string): string {
+  if (!isoString) return '';
   return new Date(isoString).toLocaleDateString('en-IN', {
     day: 'numeric',
     month: 'short',
