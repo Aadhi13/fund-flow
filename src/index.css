@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens for FundFlow
+ * Restrained, professional palette for financial transparency.
+ * One accent color (blue-slate), semantic states, neutral foundation.
+ */
+
+@theme {
+  /* ── Accent ── */
+  --color-accent-50: #eff6ff;
+  --color-accent-100: #dbeafe;
+  --color-accent-200: #bfdbfe;
+  --color-accent-500: #3b82f6;
+  --color-accent-600: #2563eb;
+  --color-accent-700: #1d4ed8;
+
+  /* ── Semantic: Income ── */
+  --color-income-50: #f0fdf4;
+  --color-income-100: #dcfce7;
+  --color-income-600: #16a34a;
+  --color-income-700: #15803d;
+
+  /* ── Semantic: Expense ── */
+  --color-expense-50: #fef2f2;
+  --color-expense-100: #fee2e2;
+  --color-expense-600: #dc2626;
+  --color-expense-700: #b91c1c;
+
+  /* ── Semantic: Warning ── */
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+
+  /* ── Font ── */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* ── Base layer ── */
+@layer base {
+  :root {
+    color-scheme: light;
+
+    /* Surface */
+    --surface-primary: #ffffff;
+    --surface-secondary: #f8fafc;
+    --surface-tertiary: #f1f5f9;
+    --surface-inverse: #0f172a;
+
+    /* Border */
+    --border-primary: #e2e8f0;
+    --border-secondary: #cbd5e1;
+    --border-accent: #3b82f6;
+
+    /* Text */
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-tertiary: #94a3b8;
+    --text-inverse: #ffffff;
+    --text-accent: #2563eb;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+    --shadow-md: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+
+    /* Specific */
+    --header-bg: #ffffff;
+    --header-border: #e2e8f0;
+    --sidebar-bg: #f8fafc;
+    --sidebar-border: #e2e8f0;
+    --input-bg: #ffffff;
+    --input-border: #d1d5db;
+    --input-focus-ring: #3b82f6;
+    --badge-neutral-bg: #f1f5f9;
+    --badge-neutral-text: #475569;
+  }
+
+  .dark {
+    color-scheme: dark;
+
+    --surface-primary: #0f172a;
+    --surface-secondary: #1e293b;
+    --surface-tertiary: #334155;
+    --surface-inverse: #f8fafc;
+
+    --border-primary: #1e293b;
+    --border-secondary: #334155;
+    --border-accent: #3b82f6;
+
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-tertiary: #64748b;
+    --text-inverse: #0f172a;
+    --text-accent: #60a5fa;
+
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+    --shadow-md: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.2);
+
+    --header-bg: #0f172a;
+    --header-border: #1e293b;
+    --sidebar-bg: #0f172a;
+    --sidebar-border: #1e293b;
+    --input-bg: #1e293b;
+    --input-border: #334155;
+    --input-focus-ring: #60a5fa;
+    --badge-neutral-bg: #1e293b;
+    --badge-neutral-text: #94a3b8;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--surface-secondary);
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+
+  /* Tabular figures for financial numbers */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ── Utility overrides ── */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
