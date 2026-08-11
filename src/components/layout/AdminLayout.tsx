@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   ArrowLeftRight,
@@ -11,6 +11,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
+import { useAuth } from '../../contexts/AuthContext';
 import { cn } from '../../lib/utils';
 
 const NAV_ITEMS = [
@@ -56,9 +57,17 @@ function NavItem({
  */
 export function AdminLayout() {
   const { theme, toggleTheme } = useTheme();
+  const { signOut, user } = useAuth();
+  const navigate = useNavigate();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const closeMobileNav = () => setMobileNavOpen(false);
+
+  const handleLogout = async () => {
+    closeMobileNav();
+    await signOut();
+    navigate('/login', { replace: true });
+  };
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
@@ -81,6 +90,11 @@ export function AdminLayout() {
         </nav>
 
         <div className="p-3 border-t border-[var(--sidebar-border)] space-y-1">
+          {user && (
+            <p className="px-3 py-1 text-xs text-[var(--text-tertiary)] truncate">
+              {user.email}
+            </p>
+          )}
           <Link
             to="/"
             className="flex items-center gap-2.5 px-3 py-2 text-sm rounded-md text-[var(--text-secondary)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)] transition-colors"
@@ -96,6 +110,7 @@ export function AdminLayout() {
             {theme === 'light' ? 'Dark mode' : 'Light mode'}
           </button>
           <button
+            onClick={handleLogout}
             className="flex items-center gap-2.5 px-3 py-2 text-sm rounded-md w-full text-[var(--text-secondary)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
           >
             <LogOut size={16} />
@@ -152,6 +167,11 @@ export function AdminLayout() {
               ))}
             </div>
             <div className="p-3 border-t border-[var(--border-primary)] space-y-1">
+              {user && (
+                <p className="px-3 py-1 text-xs text-[var(--text-tertiary)] truncate">
+                  {user.email}
+                </p>
+              )}
               <Link
                 to="/"
                 onClick={closeMobileNav}
@@ -161,6 +181,7 @@ export function AdminLayout() {
                 Public view
               </Link>
               <button
+                onClick={handleLogout}
                 className="flex items-center gap-2.5 px-3 py-2 text-sm rounded-md w-full text-[var(--text-secondary)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
               >
                 <LogOut size={16} />

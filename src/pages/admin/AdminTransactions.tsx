@@ -6,16 +6,27 @@ import { PageHeader } from '../../components/ui/PageHeader';
 import { TransactionCard } from '../../components/financial/TransactionCard';
 import { TransactionRow } from '../../components/financial/TransactionRow';
 import { EmptyState } from '../../components/ui/EmptyState';
-import { MOCK_TRANSACTIONS } from '../../data/mock';
+import { LoadingState } from '../../components/ui/LoadingState';
+import { ErrorState } from '../../components/ui/ErrorState';
+import { useTransactions } from '../../hooks/useTransactions';
 import type { TransactionType } from '../../types';
 
 type FilterType = 'all' | TransactionType;
 
 export function AdminTransactions() {
+  const { transactions, loading, error, refetch } = useTransactions();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<FilterType>('all');
 
-  const filtered = MOCK_TRANSACTIONS
+  if (loading) {
+    return <LoadingState message="Loading transactions…" />;
+  }
+
+  if (error) {
+    return <ErrorState title="Failed to load transactions" message={error} onRetry={refetch} />;
+  }
+
+  const filtered = transactions
     .filter(t => {
       if (filterType !== 'all' && t.type !== filterType) return false;
       if (searchQuery) {
@@ -23,12 +34,11 @@ export function AdminTransactions() {
         return (
           t.description.toLowerCase().includes(q) ||
           t.category.toLowerCase().includes(q) ||
-          t.added_by.toLowerCase().includes(q)
+          t.person.toLowerCase().includes(q)
         );
       }
       return true;
-    })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    });
 
   const filters: { value: FilterType; label: string }[] = [
     { value: 'all', label: 'All' },
@@ -85,11 +95,18 @@ export function AdminTransactions() {
       </div>
 
       {/* Transaction list */}
-      {filtered.length === 0 ? (
+      {transactions.length === 0 ? (
+        <Card>
+          <EmptyState
+            title="No transactions yet"
+            description="Add your first transaction to get started."
+          />
+        </Card>
+      ) : filtered.length === 0 ? (
         <Card>
           <EmptyState
             title="No transactions found"
-            description={searchQuery ? 'Try a different search term.' : 'No transactions have been recorded yet.'}
+            description={searchQuery ? 'Try a different search term.' : 'No transactions match the current filter.'}
           />
         </Card>
       ) : (

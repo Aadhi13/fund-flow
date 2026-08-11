@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { PublicLayout } from './components/layout/PublicLayout';
 import { AdminLayout } from './components/layout/AdminLayout';
+import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import { PublicDashboard } from './pages/PublicDashboard';
 import { TransactionDetail } from './pages/TransactionDetail';
 import { LoginPage } from './pages/LoginPage';
@@ -26,15 +27,21 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    element: <AdminLayout />,
+    // Auth guard wraps the admin layout
+    element: <ProtectedRoute />,
     children: [
       {
-        path: '/admin',
-        element: <AdminDashboard />,
-      },
-      {
-        path: '/admin/transactions',
-        element: <AdminTransactions />,
+        element: <AdminLayout />,
+        children: [
+          {
+            path: '/admin',
+            element: <AdminDashboard />,
+          },
+          {
+            path: '/admin/transactions',
+            element: <AdminTransactions />,
+          },
+        ],
       },
     ],
   },

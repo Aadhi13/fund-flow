@@ -1,17 +1,28 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
+import { useAuth } from '../contexts/AuthContext';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { signIn, user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // If already logged in, redirect to admin
+  const from = (location.state as { from?: string })?.from || '/admin';
+  if (user) {
+    navigate(from, { replace: true });
+    return null;
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -20,12 +31,15 @@ export function LoginPage() {
       return;
     }
 
-    // Placeholder — will integrate with Supabase auth
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setError('Authentication is not yet implemented.');
-    }, 1000);
+    const { error: signInError } = await signIn(email, password);
+    setLoading(false);
+
+    if (signInError) {
+      setError(signInError);
+    } else {
+      navigate(from, { replace: true });
+    }
   };
 
   return (

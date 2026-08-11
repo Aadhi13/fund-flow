@@ -10,14 +10,24 @@ import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { TransactionCard } from '../../components/financial/TransactionCard';
-import { MOCK_TRANSACTIONS, getMockSummary } from '../../data/mock';
+import { LoadingState } from '../../components/ui/LoadingState';
+import { ErrorState } from '../../components/ui/ErrorState';
+import { EmptyState } from '../../components/ui/EmptyState';
+import { useTransactions } from '../../hooks/useTransactions';
 import { formatCurrency } from '../../lib/utils';
 
 export function AdminDashboard() {
-  const summary = getMockSummary();
-  const recentTransactions = [...MOCK_TRANSACTIONS]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 5);
+  const { transactions, summary, loading, error, refetch } = useTransactions();
+
+  if (loading) {
+    return <LoadingState message="Loading dashboard…" />;
+  }
+
+  if (error) {
+    return <ErrorState title="Failed to load data" message={error} onRetry={refetch} />;
+  }
+
+  const recentTransactions = transactions.slice(0, 5);
 
   return (
     <div className="space-y-6">
@@ -95,11 +105,20 @@ export function AdminDashboard() {
             View all →
           </Link>
         </div>
-        <Card padding="none">
-          {recentTransactions.map(t => (
-            <TransactionCard key={t.id} transaction={t} />
-          ))}
-        </Card>
+        {recentTransactions.length === 0 ? (
+          <Card>
+            <EmptyState
+              title="No transactions yet"
+              description="Add your first transaction to get started."
+            />
+          </Card>
+        ) : (
+          <Card padding="none">
+            {recentTransactions.map(t => (
+              <TransactionCard key={t.id} transaction={t} />
+            ))}
+          </Card>
+        )}
       </section>
     </div>
   );

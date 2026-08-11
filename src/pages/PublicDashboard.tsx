@@ -11,23 +11,34 @@ import { Badge } from '../components/ui/Badge';
 import { AmountDisplay } from '../components/financial/AmountDisplay';
 import { TransactionCard } from '../components/financial/TransactionCard';
 import { TransactionRow } from '../components/financial/TransactionRow';
-import { MOCK_TRANSACTIONS, getMockSummary } from '../data/mock';
+import { LoadingState } from '../components/ui/LoadingState';
+import { ErrorState } from '../components/ui/ErrorState';
+import { EmptyState } from '../components/ui/EmptyState';
+import { useTransactions } from '../hooks/useTransactions';
 import { formatCurrency } from '../lib/utils';
 
 export function PublicDashboard() {
-  const summary = getMockSummary();
+  const { transactions, summary, loading, error, refetch } = useTransactions();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredTransactions = searchQuery
-    ? MOCK_TRANSACTIONS.filter(t =>
-        t.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.category.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : MOCK_TRANSACTIONS;
+  if (loading) {
+    return <LoadingState message="Loading financial records…" />;
+  }
 
-  const sortedTransactions = [...filteredTransactions].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  if (error) {
+    return <ErrorState title="Failed to load data" message={error} onRetry={refetch} />;
+  }
+
+  // Only show active transactions to public
+  const activeTransactions = transactions.filter(t => t.status === 'active');
+
+  const filteredTransactions = searchQuery
+    ? activeTransactions.filter(t =>
+        t.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.person.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : activeTransactions;
 
   return (
     <div className="space-y-6">
@@ -98,7 +109,7 @@ export function PublicDashboard() {
           <h2 className="text-sm font-semibold text-[var(--text-primary)]">
             All Transactions
           </h2>
-          <Badge variant="neutral">{sortedTransactions.length} records</Badge>
+          <Badge variant="neutral">{filteredTransactions.length} records</Badge>
         </div>
 
         {/* Search */}
@@ -115,38 +126,47 @@ export function PublicDashboard() {
           </div>
         </div>
 
-        <Card padding="none">
-          {sortedTransactions.length === 0 ? (
-            <div className="py-12 text-center">
-              <p className="text-sm text-[var(--text-tertiary)]">
-                No transactions match your search.
-              </p>
-            </div>
-          ) : (
-            <>
-              {/* Mobile: cards */}
-              <div className="sm:hidden">
-                {sortedTransactions.map(t => (
-                  <TransactionCard
-                    key={t.id}
-                    transaction={t}
-                    linkTo={`/transactions/${t.id}`}
-                  />
-                ))}
+        {activeTransactions.length === 0 ? (
+          <Card>
+            <EmptyState
+              title="No transactions yet"
+              description="Financial records will appear here once transactions are recorded."
+            />
+          </Card>
+        ) : (
+          <Card padding="none">
+            {filteredTransactions.length === 0 ? (
+              <div className="py-12 text-center">
+                <p className="text-sm text-[var(--text-tertiary)]">
+                  No transactions match your search.
+                </p>
               </div>
-              {/* Desktop: rows */}
-              <div className="hidden sm:block">
-                {sortedTransactions.map(t => (
-                  <TransactionRow
-                    key={t.id}
-                    transaction={t}
-                    linkTo={`/transactions/${t.id}`}
-                  />
-                ))}
-              </div>
-            </>
-          )}
-        </Card>
+            ) : (
+              <>
+                {/* Mobile: cards */}
+                <div className="sm:hidden">
+                  {filteredTransactions.map(t => (
+                    <TransactionCard
+                      key={t.id}
+                      transaction={t}
+                      linkTo={`/transactions/${t.id}`}
+                    />
+                  ))}
+                </div>
+                {/* Desktop: rows */}
+                <div className="hidden sm:block">
+                  {filteredTransactions.map(t => (
+                    <TransactionRow
+                      key={t.id}
+                      transaction={t}
+                      linkTo={`/transactions/${t.id}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </Card>
+        )}
       </section>
     </div>
   );
