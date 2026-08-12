@@ -9,6 +9,7 @@ import {
   Sun,
   Moon,
   ExternalLink,
+  Users
 } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 import { useAuth } from '../../contexts/AuthContext';
@@ -17,6 +18,7 @@ import { cn } from '../../lib/utils';
 const NAV_ITEMS = [
   { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', end: true },
   { to: '/admin/transactions', icon: ArrowLeftRight, label: 'Transactions', end: false },
+  { to: '/admin/students', icon: Users, label: 'Students', end: false },
 ];
 
 function NavItem({

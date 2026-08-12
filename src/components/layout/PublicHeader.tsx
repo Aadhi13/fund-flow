@@ -21,6 +21,12 @@ export function PublicHeader() {
         </Link>
 
         <div className="flex items-center gap-1">
+          <Link
+            to="/students"
+            className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-3 py-1.5 rounded-md hover:bg-[var(--surface-tertiary)] transition-colors"
+          >
+            Students
+          </Link>
           <button
             onClick={toggleTheme}
             className="p-2 rounded text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-tertiary)] transition-colors cursor-pointer"

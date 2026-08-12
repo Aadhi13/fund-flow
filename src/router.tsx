@@ -7,7 +7,9 @@ import { TransactionDetail } from './pages/TransactionDetail';
 import { LoginPage } from './pages/LoginPage';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { AdminTransactions } from './pages/admin/AdminTransactions';
+import { AdminStudents } from './pages/admin/AdminStudents';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { PublicStudents } from './pages/PublicStudents';
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +22,10 @@ export const router = createBrowserRouter([
       {
         path: '/transactions/:id',
         element: <TransactionDetail />,
+      },
+      {
+        path: '/students',
+        element: <PublicStudents />,
       },
       {
         path: '/login',
@@ -45,6 +51,10 @@ export const router = createBrowserRouter([
           {
             path: '/admin/transactions',
             element: <AdminTransactions />,
+          },
+          {
+            path: '/admin/students',
+            element: <AdminStudents />,
           },
           {
             path: '/admin/transactions/:id',

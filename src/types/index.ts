@@ -61,6 +61,37 @@ export interface CreateTransactionInput {
  */
 export type UpdateTransactionInput = Partial<CreateTransactionInput>;
 
+export type StudentStatus = 'not_paid' | 'partial' | 'paid' | 'overpaid' | 'inactive';
+
+export interface Student {
+  id: string;
+  name: string;
+  expected_amount: number;
+  paid_amount: number;
+  status: StudentStatus;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+}
+
+export interface CreateStudentInput {
+  name: string;
+  expected_amount: number;
+}
+
+export type UpdateStudentInput = Partial<Omit<Student, 'id' | 'created_at' | 'updated_at' | 'created_by'>>;
+
+export interface StudentSummary {
+  total_students: number;
+  paid: number;
+  partial: number;
+  not_paid: number;
+  total_expected: number;
+  total_collected: number;
+  total_remaining: number;
+}
+
+
 export interface FinancialSummary {
   total_income: number;
   total_expenses: number;
