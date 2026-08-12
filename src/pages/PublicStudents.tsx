@@ -1,19 +1,20 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { PageHeader } from '../components/ui/PageHeader';
 import { LoadingState } from '../components/ui/LoadingState';
 import { ErrorState } from '../components/ui/ErrorState';
 import { useStudents } from '../hooks/useStudents';
-import { Users, IndianRupee } from 'lucide-react';
+import { Users, IndianRupee, Search } from 'lucide-react';
+import { formatCurrency } from '../lib/utils';
 import type { StudentStatus } from '../types';
 
 export function PublicStudents() {
   const { students, summary, loading, error, refetch } = useStudents();
 
-  const activeStudents = useMemo(() => students.filter(s => s.status !== 'inactive'), [students]);
-
-  const formatCurrency = (val: number) => '₹' + val.toLocaleString('en-IN');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'paid' | 'partial' | 'not_paid'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const activeStudents = useMemo(() => students.filter(s => s.status !== 'inactive' && (filterStatus === 'all' || s.status === filterStatus) && (!searchQuery || s.name.toLowerCase().includes(searchQuery.toLowerCase()))), [students, filterStatus, searchQuery]);
 
   const getStatusBadge = (status: StudentStatus) => {
     switch(status) {
@@ -36,7 +37,7 @@ export function PublicStudents() {
     <div className="space-y-6">
       <PageHeader
         title="Student Contributions"
-        description="Public view of expected and paid contributions."
+        description="Contribution status for TechFest 2026"
       />
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -47,6 +48,7 @@ export function PublicStudents() {
           <div className="text-xl font-bold text-[var(--text-primary)]">{summary.total_students}</div>
           <div className="text-[10px] text-[var(--text-tertiary)] flex gap-2">
             <span className="text-income-600 font-medium">{summary.paid} Paid</span>
+            <span className="text-warning-600 font-medium">{summary.partial} Partial</span>
             <span className="text-expense-600 font-medium">{summary.not_paid} Unpaid</span>
           </div>
         </Card>
@@ -85,6 +87,11 @@ export function PublicStudents() {
           />
         </div>
       </Card>
+
+      <div className="space-y-2">
+        <label className="relative block"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]" /><input type="search" placeholder="Search students…" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} className="w-full pl-9 pr-3 py-2 text-sm rounded-md border bg-[var(--input-bg)] text-[var(--text-primary)] border-[var(--input-border)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--input-focus-ring)]" /></label>
+        <div className="flex gap-1.5 overflow-x-auto pb-0.5">{(['all', 'paid', 'partial', 'not_paid'] as const).map(status => <button key={status} onClick={() => setFilterStatus(status)} aria-pressed={filterStatus === status} className={`shrink-0 px-3 py-2 text-sm font-medium rounded-md border cursor-pointer ${filterStatus === status ? 'bg-accent-600 text-white border-accent-600' : 'bg-[var(--surface-primary)] text-[var(--text-secondary)] border-[var(--border-primary)]'}`}>{status === 'all' ? 'All' : status === 'not_paid' ? 'Not Paid' : status.charAt(0).toUpperCase() + status.slice(1)}</button>)}</div>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
         {activeStudents.length === 0 ? (

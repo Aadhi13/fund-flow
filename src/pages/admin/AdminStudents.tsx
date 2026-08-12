@@ -8,7 +8,6 @@ import {
   Users,
   IndianRupee,
   MoreVertical,
-  Banknote
 } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -19,6 +18,7 @@ import { LoadingState } from '../../components/ui/LoadingState';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { useStudents } from '../../hooks/useStudents';
 import { updateStudent } from '../../data/students';
+import { formatCurrency } from '../../lib/utils';
 import { StudentFormModal } from '../../components/students/StudentFormModal';
 import { BulkAddStudentModal } from '../../components/students/BulkAddStudentModal';
 import { UpdatePaymentModal } from '../../components/students/UpdatePaymentModal';
@@ -43,6 +43,7 @@ export function AdminStudents() {
 
   // Feedback banner state
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [updatingStudentId, setUpdatingStudentId] = useState<string | null>(null);
 
   const showFeedback = (msg: string) => {
     setFeedback(msg);
@@ -75,12 +76,25 @@ export function AdminStudents() {
       });
   }, [students, filterStatus, searchQuery, sortOption]);
 
+  const handleMarkPaid = async (student: Student) => {
+    setUpdatingStudentId(student.id);
+    try {
+      await updateStudent(student.id, { expected_amount: student.expected_amount, paid_amount: student.expected_amount });
+      showFeedback(student.name + ' marked as paid.');
+      refetch();
+    } catch {
+      showFeedback('Failed to mark student as paid.');
+    } finally {
+      setUpdatingStudentId(null);
+    }
+  };
+
   const handleDeactivate = async (student: Student) => {
     try {
       await updateStudent(student.id, { status: 'inactive' });
       showFeedback(`${student.name} marked as inactive.`);
       refetch();
-    } catch (_) {
+    } catch {
       showFeedback('Failed to update student status.');
     }
   };
@@ -94,12 +108,10 @@ export function AdminStudents() {
        });
       showFeedback(`${student.name} marked as active.`);
       refetch();
-    } catch (_) {
+    } catch {
       showFeedback('Failed to activate student.');
     }
   };
-
-  const formatCurrency = (val: number) => '₹' + val.toLocaleString('en-IN');
 
   const getStatusBadge = (status: StudentStatus) => {
     switch(status) {
@@ -117,8 +129,8 @@ export function AdminStudents() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Students"
-        description="Track student contributions and payment statuses independently of the financial ledger."
+        title="Student Contributions"
+        description="Quickly track who has paid without affecting the financial ledger."
         actions={
           <div className="flex items-center gap-2">
             <Button size="sm" variant="secondary" onClick={() => setBulkOpen(true)}>
@@ -181,7 +193,12 @@ export function AdminStudents() {
         </Card>
       </div>
 
-      {/* Filters bar */}
+      <div className="flex gap-1.5 overflow-x-auto pb-0.5" aria-label="Contribution status filters">
+        {(['all', 'not_paid', 'partial', 'paid', 'overpaid'] as FilterStatus[]).map(value => (
+          <button key={value} onClick={() => setFilterStatus(value)} aria-pressed={filterStatus === value} className={`shrink-0 px-3 py-2 text-sm font-medium rounded-md border cursor-pointer ${filterStatus === value ? 'bg-accent-600 text-white border-accent-600' : 'bg-[var(--surface-primary)] text-[var(--text-secondary)] border-[var(--border-primary)] hover:bg-[var(--surface-tertiary)]'}`}>{value === 'all' ? 'All' : value === 'not_paid' ? 'Not Paid' : value.charAt(0).toUpperCase() + value.slice(1)}</button>
+        ))}
+      </div>
+
       <div className="flex flex-col sm:flex-row gap-2.5">
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]" />
@@ -250,16 +267,14 @@ export function AdminStudents() {
                   </div>
                   <div className="flex items-center gap-1">
                     {!isInactive && (
-                      <button
-                        onClick={() => {
-                          setEditingStudent(student);
-                          setPaymentOpen(true);
-                        }}
-                        className="p-1.5 bg-accent-50 text-accent-700 hover:bg-accent-100 dark:bg-accent-950/30 dark:text-accent-400 dark:hover:bg-accent-900/40 rounded-md transition-colors font-medium text-xs flex items-center gap-1 cursor-pointer border border-accent-200 dark:border-accent-800"
-                        title="Update Payment"
-                      >
-                        <Banknote size={14} /> Update
-                      </button>
+                      student.status === 'paid' ? (
+                        <span className="text-sm font-medium text-income-600">Paid</span>
+                      ) : (
+                        <div className="flex gap-1.5">
+                          <Button size="sm" loading={updatingStudentId === student.id} onClick={() => handleMarkPaid(student)}>Mark Paid</Button>
+                          <Button size="sm" variant="secondary" disabled={updatingStudentId === student.id} onClick={() => { setEditingStudent(student); setPaymentOpen(true); }}>{student.status === 'partial' || student.status === 'overpaid' ? 'Update' : 'Partial'}</Button>
+                        </div>
+                      )
                     )}
                     <div className="relative group">
                       <button className="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] rounded hover:bg-[var(--surface-tertiary)] cursor-pointer">

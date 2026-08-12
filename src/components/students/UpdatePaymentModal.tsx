@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { X, Save, Check } from 'lucide-react';
+import { X, Save } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { updateStudent } from '../../data/students';
+import { formatCurrency } from '../../lib/utils';
 import type { Student } from '../../types';
 
 interface UpdatePaymentModalProps {
@@ -50,10 +51,6 @@ export function UpdatePaymentModal({ open, onClose, student, onSuccess }: Update
     }
   };
 
-  const handleMarkPaid = () => {
-    setPaidAmount(student.expected_amount.toString());
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
@@ -79,22 +76,11 @@ export function UpdatePaymentModal({ open, onClose, student, onSuccess }: Update
 
           <div className="mb-2">
             <h3 className="text-base font-semibold text-[var(--text-primary)]">{student.name}</h3>
-            <p className="text-sm text-[var(--text-secondary)]">Expected: ₹{student.expected_amount.toLocaleString('en-IN')}</p>
+            <p className="text-sm text-[var(--text-secondary)]">Expected: {formatCurrency(student.expected_amount)}</p>
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium text-[var(--text-secondary)] flex justify-between items-center">
-              <span>Paid Amount (₹)</span>
-              {parseFloat(paidAmount) !== student.expected_amount && (
-                <button
-                  type="button"
-                  onClick={handleMarkPaid}
-                  className="text-xs text-income-600 hover:text-income-700 font-medium flex items-center gap-1 cursor-pointer"
-                >
-                  <Check size={12} /> Mark as Paid
-                </button>
-              )}
-            </label>
+            <label className="block text-xs font-medium text-[var(--text-secondary)]">Paid amount (₹)</label>
             <input
               type="number"
               required
