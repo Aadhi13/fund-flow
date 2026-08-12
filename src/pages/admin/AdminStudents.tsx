@@ -44,6 +44,7 @@ export function AdminStudents() {
   // Feedback banner state
   const [feedback, setFeedback] = useState<string | null>(null);
   const [updatingStudentId, setUpdatingStudentId] = useState<string | null>(null);
+  const [openStudentMenuId, setOpenStudentMenuId] = useState<string | null>(null);
 
   const showFeedback = (msg: string) => {
     setFeedback(msg);
@@ -268,7 +269,10 @@ export function AdminStudents() {
                   <div className="flex items-center gap-1">
                     {!isInactive && (
                       student.status === 'paid' ? (
-                        <span className="text-sm font-medium text-income-600">Paid</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm font-medium text-income-600">Paid</span>
+                          <Button size="sm" variant="secondary" onClick={() => { setEditingStudent(student); setPaymentOpen(true); }}>Update Amount</Button>
+                        </div>
                       ) : (
                         <div className="flex gap-1.5">
                           <Button size="sm" loading={updatingStudentId === student.id} onClick={() => handleMarkPaid(student)}>Mark Paid</Button>
@@ -276,11 +280,11 @@ export function AdminStudents() {
                         </div>
                       )
                     )}
-                    <div className="relative group">
-                      <button className="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] rounded hover:bg-[var(--surface-tertiary)] cursor-pointer">
+                    <div className="relative">
+                      <button type="button" onClick={() => setOpenStudentMenuId(current => current === student.id ? null : student.id)} aria-expanded={openStudentMenuId === student.id} aria-label={`Options for ${student.name}`} className="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] rounded hover:bg-[var(--surface-tertiary)] cursor-pointer">
                         <MoreVertical size={16} />
                       </button>
-                      <div className="absolute right-0 top-full mt-1 w-32 bg-[var(--surface-primary)] border border-[var(--border-primary)] rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 flex flex-col py-1">
+                      <div className={`absolute right-0 top-full mt-1 w-32 bg-[var(--surface-primary)] border border-[var(--border-primary)] rounded shadow-lg transition-all z-10 flex flex-col py-1 ${openStudentMenuId === student.id ? 'opacity-100 visible' : 'opacity-0 invisible'}` }>
                         <button
                           onClick={() => {
                             setEditingStudent(student);
