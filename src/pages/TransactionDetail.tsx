@@ -335,11 +335,11 @@ export function TransactionDetail() {
             </div>
           </div>
 
-          {/* 5. Receipt Area Placeholder */}
+          {/* 5. Receipt Document Section */}
           <div className="space-y-2 pt-2">
             <span className="text-xs font-medium text-[var(--text-tertiary)] flex items-center gap-1">
               <FileText size={13} />
-              Verification Document / Receipt Attachment
+              Verification Document / Receipt
             </span>
 
             {transaction.receipt_path ? (
@@ -350,10 +350,10 @@ export function TransactionDetail() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs font-semibold text-[var(--text-primary)] truncate">
-                      Receipt Document Attached
+                      Receipt Attachment Available
                     </p>
                     <p className="text-[11px] text-[var(--text-tertiary)] truncate">
-                      Public proof document for this transaction
+                      Verified proof document for this transaction
                     </p>
                   </div>
                 </div>
@@ -363,18 +363,18 @@ export function TransactionDetail() {
                   rel="noopener noreferrer"
                   className="px-3 py-1.5 text-xs font-medium text-white bg-accent-600 rounded-md hover:bg-accent-700 inline-flex items-center gap-1 shrink-0 transition-colors cursor-pointer"
                 >
-                  <span>View Document</span>
+                  <span>View receipt</span>
                   <ExternalLink size={12} />
                 </a>
               </div>
             ) : (
               <div className="p-4 bg-[var(--surface-secondary)]/70 border border-dashed border-[var(--border-primary)] rounded-lg text-center space-y-1">
                 <FileText size={20} className="mx-auto text-[var(--text-tertiary)]" />
-                <p className="text-xs font-medium text-[var(--text-secondary)]">
-                  No physical receipt image uploaded for this record.
+                <p className="text-xs font-semibold text-[var(--text-secondary)]">
+                  Receipt not available
                 </p>
                 <p className="text-[11px] text-[var(--text-tertiary)] max-w-sm mx-auto">
-                  Receipt attachment verification can be attached by event organizers.
+                  No proof receipt file was attached when recording this entry.
                 </p>
               </div>
             )}

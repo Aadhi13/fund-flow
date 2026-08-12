@@ -1,4 +1,4 @@
--- FundFlow: transactions table and RLS policies
+-- FundFlow: transactions table, storage bucket, and RLS policies
 -- Run this in the Supabase SQL Editor.
 
 -- ─── Table ───────────────────────────────────────────────────────────────────
@@ -44,7 +44,7 @@ create trigger set_updated_at
   execute function public.update_updated_at();
 
 
--- ─── Row Level Security ──────────────────────────────────────────────────────
+-- ─── Row Level Security (Transactions Table) ─────────────────────────────────
 
 alter table public.transactions enable row level security;
 
@@ -76,11 +76,49 @@ create policy "Authenticated users can update transactions"
   using (true)
   with check (true);
 
--- Note: No DELETE policy. Transactions are voided, not deleted.
--- The database enforces this by having no delete policy with RLS enabled.
-
--- ─── Table Grants ─────────────────────────────────────────────────────────────
--- Grant basic table access to PostgREST roles so RLS policies can take effect.
+-- Table Grants
 grant select on public.transactions to anon, authenticated;
 grant insert, update on public.transactions to authenticated;
+
+
+-- ─── Storage Bucket & Policies (Receipts) ─────────────────────────────────────
+
+-- Create public storage bucket for receipts
+insert into storage.buckets (id, name, public)
+values ('receipts', 'receipts', true)
+on conflict (id) do nothing;
+
+-- Clean up existing policies if re-running
+drop policy if exists "Public users can view receipt files" on storage.objects;
+drop policy if exists "Authenticated users can upload receipt files" on storage.objects;
+drop policy if exists "Authenticated users can update receipt files" on storage.objects;
+drop policy if exists "Authenticated users can delete receipt files" on storage.objects;
+
+-- Policy: Anyone can view/download receipt files
+create policy "Public users can view receipt files"
+  on storage.objects
+  for select
+  to public
+  using (bucket_id = 'receipts');
+
+-- Policy: Only authenticated users can upload receipt files
+create policy "Authenticated users can upload receipt files"
+  on storage.objects
+  for insert
+  to authenticated
+  with check (bucket_id = 'receipts');
+
+-- Policy: Only authenticated users can update receipt files
+create policy "Authenticated users can update receipt files"
+  on storage.objects
+  for update
+  to authenticated
+  using (bucket_id = 'receipts');
+
+-- Policy: Only authenticated users can delete receipt files
+create policy "Authenticated users can delete receipt files"
+  on storage.objects
+  for delete
+  to authenticated
+  using (bucket_id = 'receipts');
 

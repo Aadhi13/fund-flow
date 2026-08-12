@@ -39,8 +39,10 @@ type SortOrder = 'desc' | 'asc';
 
 const ITEMS_PER_PAGE = 10;
 
+import { ExportDropdown } from '../../components/ui/ExportDropdown';
+
 export function AdminTransactions() {
-  const { transactions, loading, error, refetch } = useTransactions();
+  const { transactions, summary, loading, error, refetch } = useTransactions();
 
   // Filter & Search states
   const [searchQuery, setSearchQuery] = useState('');
@@ -133,16 +135,19 @@ export function AdminTransactions() {
         title="Transactions"
         description="Manage and audit all event financial records"
         actions={
-          <Button
-            size="sm"
-            icon={<Plus size={14} />}
-            onClick={() => {
-              setEditingTransaction(null);
-              setFormOpen(true);
-            }}
-          >
-            Add transaction
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExportDropdown transactions={transactions} summary={summary} />
+            <Button
+              size="sm"
+              icon={<Plus size={14} />}
+              onClick={() => {
+                setEditingTransaction(null);
+                setFormOpen(true);
+              }}
+            >
+              Add transaction
+            </Button>
+          </div>
         }
       />
 

@@ -18,6 +18,8 @@ import { TransactionFormModal } from '../../components/financial/TransactionForm
 import { useTransactions } from '../../hooks/useTransactions';
 import { formatCurrency } from '../../lib/utils';
 
+import { ExportDropdown } from '../../components/ui/ExportDropdown';
+
 export function AdminDashboard() {
   const { transactions, summary, loading, error, refetch } = useTransactions();
   const [formOpen, setFormOpen] = useState(false);
@@ -38,13 +40,16 @@ export function AdminDashboard() {
         title="Dashboard"
         description="Overview of event finances"
         actions={
-          <Button
-            size="sm"
-            icon={<Plus size={14} />}
-            onClick={() => setFormOpen(true)}
-          >
-            Add transaction
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExportDropdown transactions={transactions} summary={summary} />
+            <Button
+              size="sm"
+              icon={<Plus size={14} />}
+              onClick={() => setFormOpen(true)}
+            >
+              Add transaction
+            </Button>
+          </div>
         }
       />
 
