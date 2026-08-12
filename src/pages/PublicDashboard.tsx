@@ -22,6 +22,7 @@ import { EmptyState } from '../components/ui/EmptyState';
 import { useTransactions } from '../hooks/useTransactions';
 import { formatCurrency, formatTxnId } from '../lib/utils';
 import { CATEGORY_OPTIONS } from '../data/mock';
+import { FinancialAnalytics } from '../components/financial/FinancialAnalytics';
 import type { TransactionType, TransactionCategory } from '../types';
 
 type SortOption = 'newest' | 'oldest' | 'amount-high' | 'amount-low';
@@ -393,6 +394,11 @@ export function PublicDashboard() {
             </div>
           </Card>
         )}
+      </section>
+
+      {/* 4. Supporting Financial Analytics */}
+      <section className="pt-2 border-t border-[var(--border-primary)]">
+        <FinancialAnalytics transactions={transactions} />
       </section>
     </div>
   );

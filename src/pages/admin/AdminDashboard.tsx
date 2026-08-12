@@ -19,6 +19,7 @@ import { useTransactions } from '../../hooks/useTransactions';
 import { formatCurrency } from '../../lib/utils';
 
 import { ExportDropdown } from '../../components/ui/ExportDropdown';
+import { FinancialAnalytics } from '../../components/financial/FinancialAnalytics';
 
 export function AdminDashboard() {
   const { transactions, summary, loading, error, refetch } = useTransactions();
@@ -153,6 +154,11 @@ export function AdminDashboard() {
             ))}
           </Card>
         )}
+      </section>
+
+      {/* Financial Analytics */}
+      <section className="pt-2 border-t border-[var(--border-primary)]">
+        <FinancialAnalytics transactions={transactions} />
       </section>
 
       {/* Transaction Form Modal */}

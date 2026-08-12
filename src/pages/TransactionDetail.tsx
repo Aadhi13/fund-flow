@@ -86,15 +86,23 @@ export function TransactionDetail() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleBack = () => {
+    if (user) {
+      navigate('/admin/transactions');
+    } else {
+      navigate('/');
+    }
+  };
+
   if (loading) {
     return (
       <div className="space-y-4">
         <button
-          onClick={() => navigate('/')}
+          onClick={handleBack}
           className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
         >
           <ArrowLeft size={14} />
-          Back to Public Ledger
+          {user ? 'Back to Transactions' : 'Back to Public Ledger'}
         </button>
         <LoadingState message="Verifying transaction record…" />
       </div>
@@ -105,11 +113,11 @@ export function TransactionDetail() {
     return (
       <div className="space-y-4">
         <button
-          onClick={() => navigate('/')}
+          onClick={handleBack}
           className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
         >
           <ArrowLeft size={14} />
-          Back to Public Ledger
+          {user ? 'Back to Transactions' : 'Back to Public Ledger'}
         </button>
         <ErrorState
           title="Transaction record not found"
@@ -135,11 +143,11 @@ export function TransactionDetail() {
       {/* Top Bar: Navigation & Authenticated Organizer Actions */}
       <div className="flex items-center justify-between">
         <button
-          onClick={() => navigate('/')}
+          onClick={handleBack}
           className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
         >
           <ArrowLeft size={14} />
-          Back to Public Ledger
+          {user ? 'Back to Transactions' : 'Back to Public Ledger'}
         </button>
 
         {/* Show organizer management buttons ONLY when authenticated */}

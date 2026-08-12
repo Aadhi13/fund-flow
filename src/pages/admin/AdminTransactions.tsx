@@ -324,7 +324,7 @@ export function AdminTransactions() {
                       </span>
                       <div className="flex items-center gap-2">
                         <Link
-                          to={`/transactions/${t.id}`}
+                          to={`/admin/transactions/${t.id}`}
                           className="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
                           title="View Details"
                         >
@@ -420,7 +420,7 @@ export function AdminTransactions() {
                         <td className="py-3 px-4 text-center whitespace-nowrap">
                           <div className="flex items-center justify-center gap-1.5">
                             <Link
-                              to={`/transactions/${t.id}`}
+                              to={`/admin/transactions/${t.id}`}
                               className="p-1 rounded text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-tertiary)] transition-colors"
                               title="View Details"
                             >

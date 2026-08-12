@@ -7,6 +7,7 @@ import { TransactionDetail } from './pages/TransactionDetail';
 import { LoginPage } from './pages/LoginPage';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { AdminTransactions } from './pages/admin/AdminTransactions';
+import { NotFoundPage } from './pages/NotFoundPage';
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ export const router = createBrowserRouter([
         path: '/login',
         element: <LoginPage />,
       },
+      {
+        path: '*',
+        element: <NotFoundPage />,
+      },
     ],
   },
   {
@@ -40,6 +45,10 @@ export const router = createBrowserRouter([
           {
             path: '/admin/transactions',
             element: <AdminTransactions />,
+          },
+          {
+            path: '/admin/transactions/:id',
+            element: <TransactionDetail />,
           },
         ],
       },

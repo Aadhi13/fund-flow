@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 import { Card } from '../components/ui/Card';
@@ -15,10 +15,16 @@ export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // If already logged in, redirect to admin
   const from = (location.state as { from?: string })?.from || '/admin';
+
+  // Safely handle redirection when user is already logged in
+  useEffect(() => {
+    if (user) {
+      navigate(from, { replace: true });
+    }
+  }, [user, navigate, from]);
+
   if (user) {
-    navigate(from, { replace: true });
     return null;
   }
 
